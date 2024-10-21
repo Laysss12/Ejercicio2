@@ -1,0 +1,31 @@
+name: Check for Leaks on Push  # Nombre del workflow
+
+#Configuración para que el workflow se ejecute en cada push a las ramas 'main' o 'develop'
+on:
+  push:
+    branches:
+
+- main
+- develop
+
+jobs:
+  check_leaks:
+    runs-on: ubuntu-latest  # El entorno en el que se ejecutará el workflow (Ubuntu)
+
+    steps:
+      # Paso 1: Hacer checkout del contenido del repositorio
+
+    - name: Checkout repository content
+      uses: actions/checkout@v3
+
+      # Paso 2: Descargar e instalar Gitleaks
+    - name: Install Gitleaks
+      run: |
+        wget https://github.com/zricethezav/gitleaks/releases/download/v8.17.0/gitleaks_8.17.0_linux_x64.tar.gz
+        tar -xvf gitleaks_8.17.0_linux_x64.tar.gz
+        sudo mv gitleaks /usr/local/bin/
+
+      # Paso 3: Ejecutar Gitleaks para escanear el repositorio en busca de fugas
+    - name: Run Gitleaks to check for leaks
+      run: |
+        gitleaks detect --source . --exit-code 1
